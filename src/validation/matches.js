@@ -6,11 +6,6 @@ export const MATCH_STATUS = Object.freeze({
   FINISHED: 'finished',
 });
 
-const isoDateString = z.string().refine(
-  (value) => z.iso.datetime({ offset: true }).safeParse(value).success,
-  { message: 'Must be a valid ISO 8601 date-time string' },
-);
-
 export const listMatchesQuerySchema = z.object({
   limit: z.coerce.number().int().positive().max(100).optional(),
 });
@@ -24,8 +19,8 @@ export const createMatchSchema = z
     sport: z.string().trim().min(1),
     homeTeam: z.string().trim().min(1),
     awayTeam: z.string().trim().min(1),
-    startTime: isoDateString,
-    endTime: isoDateString,
+    startTime: z.iso.datetime(),
+    endTime: z.iso.datetime(),
     homeScore: z.coerce.number().int().nonnegative().optional(),
     awayScore: z.coerce.number().int().nonnegative().optional(),
   })
