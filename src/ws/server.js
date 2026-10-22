@@ -26,11 +26,31 @@ export function attachWebSocketServer(server) {
     });
 
     wss.on('connection', (socket) => {
+        socket.isAlive = true;
+        socket.on('pong', () => {
+            socket.isAlive = true;
+        });
+
         sendJSON(socket, { type: 'welcome' });
 
         socket.on('error', (error) => {
             console.error('WebSocket error:', error);
         });
+    });
+
+    const interval = setInterval(() => {
+        wss.clients.forEach((client) => {
+            if (client.isAlive === false) {
+                return client.terminate();
+            }
+
+            ws.isAlive = false;
+            ws.ping();
+        });
+    }, 30000);
+
+    wss.on('close', () => {
+        clearInterval(interval);
     });
 
     function broadcastMatchCreated(match) {
