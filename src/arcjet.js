@@ -12,7 +12,7 @@ export const httpArcjet = arcjetKey ?
         key: arcjetKey,
         rules: [
             shield({ mode: arcjetMode}),
-            detectBot({ mode: arcjetMode, allow: ['CATEGORY:SEARCH_ENGINE', 'CATEGORY:PREVIEW']}),
+            // detectBot({ mode: arcjetMode, allow: ['CATEGORY:SEARCH_ENGINE', 'CATEGORY:PREVIEW']}),
             slidingWindow({ mode: arcjetMode, interval: '10s', max: 50})
         ]
     }) : null;
@@ -22,7 +22,7 @@ export const wsArcjet = arcjetKey ?
         key: arcjetKey,
         rules: [
             shield({ mode: arcjetMode}),
-            detectBot({ mode: arcjetMode, allow: ['CATEGORY:SEARCH_ENGINE', 'CATEGORY:PREVIEW']}),
+            // detectBot({ mode: arcjetMode, allow: ['CATEGORY:SEARCH_ENGINE', 'CATEGORY:PREVIEW']}),
             slidingWindow({ mode: arcjetMode, interval: '2s', max: 5})
         ]
     }) : null; 
@@ -40,16 +40,16 @@ export function securityMiddleware() {
 
             if(decision.isDenied()) {
                 if(decision.reason.isRateLimit()) {
-                    res.status(429).json({ error: 'Too Many Requests' });
+                    return res.status(429).json({ error: 'Too Many Requests' });
                 }
 
-                res.status(403).json({ error: 'Forbidden' });
+                return res.status(403).json({ error: 'Forbidden' });
             }
         } catch (error) {
             console.error('Arcjet middleware error:', error);
-            res.status(503).json({ error: 'Service Unavailable' });
+            return res.status(503).json({ error: 'Service Unavailable' });
         } 
 
-        next();
+        return next();
     }
 }
